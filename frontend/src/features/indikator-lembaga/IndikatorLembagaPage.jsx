@@ -3,7 +3,8 @@ import FilterSelect from "../../components/ui/FilterSelect";
 import KartuIndikator from "./components/KartuIndikator";
 import { PERIODE, PRODI_OPSI, SEMUA_PRODI, mapIndikatorApi } from "./data";
 
-const API_URL = "http://127.0.0.1:8000";
+// const API_URL = "http://127.0.0.1:8000";
+const API_URL = "https://substantial-interior-nutten-dot.trycloudflare.com";
 
 export default function IndikatorLembagaPage() {
   const [indikatorList, setIndikatorList] = useState([]);
