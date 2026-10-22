@@ -4,7 +4,8 @@ import KartuIndikator from "./components/KartuIndikator";
 import { PERIODE, PRODI_OPSI, SEMUA_PRODI, mapIndikatorApi } from "./data";
 
 // const API_URL = "http://127.0.0.1:8000";
-const API_URL = "https://substantial-interior-nutten-dot.trycloudflare.com";
+// const API_URL = "https://substantial-interior-nutten-dot.trycloudflare.com";
+const API_URL = "https://simutu-plai.onrender.com";
 
 export default function IndikatorLembagaPage() {
   const [indikatorList, setIndikatorList] = useState([]);
@@ -68,6 +69,14 @@ export default function IndikatorLembagaPage() {
     .filter((d) => d.unitKerja === unitAktif)
     .sort((a, b) => a.urutan - b.urutan);
 
+  // function formatNamaUnit(namaUnit) {
+  //   if (namaUnit === "Program Studi Sains Data Terapan") {
+  //     return "Program Studi";
+  //   }
+
+  //   return namaUnit;
+  // }
+
   return (
     <div className="mx-auto w-full max-w-5xl">
       <h2 className="text-2xl font-semibold text-slate-900">
@@ -81,6 +90,11 @@ export default function IndikatorLembagaPage() {
             value={unitAktif}
             onChange={setUnitKerja}
             options={unitOpsi}
+            formatOption={(nama) =>
+              nama === "Program Studi Sains Data Terapan"
+                ? "Program Studi"
+                : nama
+            }
           />
 
           <FilterSelect

@@ -1,4 +1,10 @@
-export default function FilterSelect({ label, value, onChange, options }) {
+export default function FilterSelect({
+  label,
+  value,
+  onChange,
+  options,
+  formatOption,
+}) {
   return (
     <label className="flex flex-col gap-1 text-sm text-slate-600">
       {label}
@@ -9,7 +15,7 @@ export default function FilterSelect({ label, value, onChange, options }) {
       >
         {options.map((o) => (
           <option key={o} value={o}>
-            {o}
+            {formatOption ? formatOption(o) : o}
           </option>
         ))}
       </select>

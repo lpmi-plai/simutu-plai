@@ -4,7 +4,8 @@ import TabelDokumen from "./components/TabelDokumen";
 import { SEMUA_UNIT, mapDokumenApi } from "./data";
 
 // const API_URL = "http://127.0.0.1:8000";
-const API_URL = "https://substantial-interior-nutten-dot.trycloudflare.com";
+// const API_URL = "https://substantial-interior-nutten-dot.trycloudflare.com";
+const API_URL = "https://simutu-plai.onrender.com";
 
 const SEMUA_KATEGORI = "Semua kategori";
 const SEMUA_STATUS = "Semua status";
