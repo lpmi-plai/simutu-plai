@@ -18,25 +18,19 @@ function App() {
         <Sidebar />
         <main className="flex-1 px-4 py-8 md:px-10 print:p-0">
           <Routes>
-            <Route
-              path="/"
-              element={<Navigate to="/indikator-lembaga" replace />}
-            />
+            <Route path="/" element={<IndikatorLembagaPage />} />
             <Route path="/dashboard" element={<DashboardPage />} />
-            <Route
+            {/* <Route
               path="/indikator-lembaga"
               element={<IndikatorLembagaPage />}
-            />
+            /> */}
             <Route
               path="/ketersediaan-dokumen"
               element={<KetersediaanDokumenPage />}
             />
             <Route path="/evaluasi-monev" element={<EvaluasiMonevPage />} />
             <Route path="/evaluasi-ami" element={<EvaluasiAmiPage />} />
-            <Route
-              path="*"
-              element={<Navigate to="/indikator-lembaga" replace />}
-            />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
       </div>
