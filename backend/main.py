@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from routers import (
     ketersediaan,
     indikator_lembaga,
+    dashboard,
 )
 
 app = FastAPI(title="SIMUTU PLAI API")
@@ -37,3 +38,4 @@ def root():
 # -----------------------------
 app.include_router(ketersediaan.router)
 app.include_router(indikator_lembaga.router)
+app.include_router(dashboard.router)
