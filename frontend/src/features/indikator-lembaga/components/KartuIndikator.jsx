@@ -4,6 +4,7 @@ import { formatNilai, getTone, hitung } from "../utils";
 import CincinProgres from "./CincinProgres";
 import GrafikProdi from "./GrafikProdi";
 import GrafikPeriode from "./GrafikPeriode";
+import SumberData from "./SumberData";
 
 export default function KartuIndikator({
   indikator,
@@ -96,7 +97,6 @@ export default function KartuIndikator({
               {keterangan}
             </p>
           </div>
-
           {periode === "Keseluruhan" ? (
             <GrafikPeriode indikator={indikator} prodi={prodi} />
           ) : (
@@ -104,6 +104,8 @@ export default function KartuIndikator({
           )}
         </div>
       </div>
+
+      <SumberData indikator={indikator} />
     </article>
   );
 }

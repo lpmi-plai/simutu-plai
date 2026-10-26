@@ -31,7 +31,6 @@ function normalisasiProdi(prodiDb) {
 }
 
 // Menggabungkan baris API berdasarkan ID indikator.
-
 export function mapIndikatorApi(dataApi) {
   const hasil = new Map();
 
@@ -46,6 +45,28 @@ export function mapIndikatorApi(dataApi) {
         urutan: row.urutan,
         isShow: row.is_show,
         unitKerja: row.nama_unit,
+
+        // Sumber data utama.
+        dataSource:
+          row.sumber_data_id != null
+            ? {
+                id: row.sumber_data_id,
+                spreadsheetName: row.spreadsheet_name,
+                sheetName: row.sheet_name,
+                spreadsheetUrl: row.spreadsheet_url,
+              }
+            : null,
+
+        // Sumber data tambahan jika tersedia.
+        dataSource2:
+          row.sumber_data_id_2 != null
+            ? {
+                id: row.sumber_data_id_2,
+                spreadsheetName: row.spreadsheet_name_2,
+                sheetName: row.sheet_name_2,
+                spreadsheetUrl: row.spreadsheet_url_2,
+              }
+            : null,
 
         nilai: Object.fromEntries(PRODI_OPSI.map((p) => [p, null])),
         evaluasi: Object.fromEntries(PRODI_OPSI.map((p) => [p, null])),
@@ -92,7 +113,6 @@ export function mapIndikatorApi(dataApi) {
   // Pertahankan nilai periode terbaru untuk ringkasan kartu.
   for (const indikator of hasil.values()) {
     const periodeTerurut = Object.keys(indikator.riwayat).sort();
-
     const periodeTerbaru = periodeTerurut.at(-1);
 
     if (!periodeTerbaru) continue;
