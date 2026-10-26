@@ -3,11 +3,12 @@ import { PRODI_LIST, SEMUA_PRODI } from "../data";
 import { formatNilai, getTone, hitung } from "../utils";
 import CincinProgres from "./CincinProgres";
 import GrafikProdi from "./GrafikProdi";
+import GrafikPeriode from "./GrafikPeriode";
 
-/* Satu kartu per indikator: cincin ringkasan di kiri, chart per prodi di kanan. */
 export default function KartuIndikator({
   indikator,
   prodi,
+  periode,
   utama = false,
   className = "",
 }) {
@@ -72,12 +73,17 @@ export default function KartuIndikator({
               / {formatNilai(hasil.target, satuan)} target
             </span>
           </CincinProgres>
+
           <p className="mt-2 text-center text-sm text-slate-500">
             {keterangan}
           </p>
         </div>
 
-        <GrafikProdi indikator={indikator} daftarProdi={daftarProdi} />
+        {periode === "Keseluruhan" ? (
+          <GrafikPeriode indikator={indikator} prodi={prodi} />
+        ) : (
+          <GrafikProdi indikator={indikator} daftarProdi={daftarProdi} />
+        )}
       </div>
     </article>
   );

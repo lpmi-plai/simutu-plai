@@ -1,7 +1,7 @@
 export const PRODI_LIST = ["SDT", "AIRO", "RKS"];
 export const SEMUA_PRODI = "Semua prodi";
 export const PRODI_OPSI = [SEMUA_PRODI, ...PRODI_LIST];
-export const PERIODE = ["2025/2026", "2026/2027"];
+export const PERIODE = ["Keseluruhan", "2025/2026", "2026/2027"];
 
 // Sesuaikan nama lengkap dengan nilai kolom evaluasi_indikator.prodi.
 const PRODI_DB = {
@@ -31,6 +31,7 @@ function normalisasiProdi(prodiDb) {
 }
 
 // Menggabungkan baris API berdasarkan ID indikator.
+
 export function mapIndikatorApi(dataApi) {
   const hasil = new Map();
 
@@ -45,23 +46,36 @@ export function mapIndikatorApi(dataApi) {
         urutan: row.urutan,
         isShow: row.is_show,
         unitKerja: row.nama_unit,
+
         nilai: Object.fromEntries(PRODI_OPSI.map((p) => [p, null])),
         evaluasi: Object.fromEntries(PRODI_OPSI.map((p) => [p, null])),
+
+        // Riwayat nilai aktual dan target per periode.
+        riwayat: {},
       });
     }
 
     const indikator = hasil.get(row.id);
 
-    // LEFT JOIN dapat menghasilkan baris tanpa evaluasi.
+    // Data indikator bisa tetap ada meskipun belum dievaluasi.
     if (row.evaluasi_id == null) continue;
 
     const kodeProdi = normalisasiProdi(row.prodi);
+    const periodeRow = row.periode;
 
-    indikator.nilai[kodeProdi] =
-      row.actual_value == null ? null : Number(row.actual_value);
+    if (!periodeRow) continue;
 
-    indikator.evaluasi[kodeProdi] = {
-      periode: row.periode,
+    if (!indikator.riwayat[periodeRow]) {
+      indikator.riwayat[periodeRow] = {
+        nilai: {},
+        evaluasi: {},
+      };
+    }
+
+    const aktual = row.actual_value == null ? null : Number(row.actual_value);
+
+    const evaluasi = {
+      periode: periodeRow,
       target: row.target_value == null ? null : Number(row.target_value),
       operasiTarget: row.operasi_target,
       persentase:
@@ -70,6 +84,25 @@ export function mapIndikatorApi(dataApi) {
           : Number(row.achievement_percentage),
       status: row.evaluation_status,
     };
+
+    indikator.riwayat[periodeRow].nilai[kodeProdi] = aktual;
+    indikator.riwayat[periodeRow].evaluasi[kodeProdi] = evaluasi;
+  }
+
+  // Pertahankan nilai periode terbaru untuk ringkasan kartu.
+  for (const indikator of hasil.values()) {
+    const periodeTerurut = Object.keys(indikator.riwayat).sort();
+
+    const periodeTerbaru = periodeTerurut.at(-1);
+
+    if (!periodeTerbaru) continue;
+
+    const dataTerbaru = indikator.riwayat[periodeTerbaru];
+
+    for (const p of PRODI_LIST) {
+      indikator.nilai[p] = dataTerbaru.nilai[p] ?? null;
+      indikator.evaluasi[p] = dataTerbaru.evaluasi[p] ?? null;
+    }
   }
 
   return [...hasil.values()];

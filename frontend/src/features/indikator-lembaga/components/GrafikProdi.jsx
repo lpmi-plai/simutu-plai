@@ -3,10 +3,13 @@ import { formatNilai, getTone } from "../utils";
 /* Chart batang per prodi dengan garis putus-putus sebagai target. */
 export default function GrafikProdi({ indikator, daftarProdi }) {
   const { satuan, target } = indikator;
+
   const semuaNilai = daftarProdi.map((p) => indikator.nilai[p]);
+
   // Skala diberi ruang ekstra supaya batang yang melewati target tetap muat.
   const skala =
     satuan === "persen" ? 100 : Math.max(target, ...semuaNilai) * 1.15;
+
   const posisiTarget = (target / skala) * 100;
 
   return (
@@ -27,9 +30,11 @@ export default function GrafikProdi({ indikator, daftarProdi }) {
           {daftarProdi.map((p) => {
             const nilai = indikator.nilai[p];
             const tone = getTone(nilai, target);
+
             return (
               <li key={p} className="flex items-center text-sm">
                 <span className="w-12 text-slate-600">{p}</span>
+
                 <div
                   className="h-6 flex-1 overflow-hidden rounded bg-slate-100"
                   aria-hidden="true"
@@ -39,6 +44,7 @@ export default function GrafikProdi({ indikator, daftarProdi }) {
                     style={{ width: `${(nilai / skala) * 100}%` }}
                   />
                 </div>
+
                 <span className="w-14 text-right font-medium tabular-nums text-slate-900">
                   {formatNilai(nilai, satuan)}
                 </span>

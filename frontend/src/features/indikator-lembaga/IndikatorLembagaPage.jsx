@@ -13,7 +13,7 @@ export default function IndikatorLembagaPage() {
   const [error, setError] = useState("");
 
   const [unitKerja, setUnitKerja] = useState("");
-  const [periode, setPeriode] = useState(PERIODE[0]);
+  const [periode, setPeriode] = useState(PERIODE[PERIODE.length - 1]);
   const [prodi, setProdi] = useState(SEMUA_PRODI);
 
   useEffect(() => {
@@ -24,7 +24,12 @@ export default function IndikatorLembagaPage() {
         setLoading(true);
         setError("");
 
-        const params = new URLSearchParams({ periode });
+        // const params = new URLSearchParams({ periode });
+        const params = new URLSearchParams();
+
+        if (periode !== "Keseluruhan") {
+          params.set("periode", periode);
+        }
 
         const response = await fetch(
           `${API_URL}/indikator-lembaga?${params.toString()}`,
@@ -133,6 +138,7 @@ export default function IndikatorLembagaPage() {
               key={indikator.id}
               indikator={indikator}
               prodi={prodi}
+              periode={periode}
               utama={i === 0}
               className={i === 0 ? "lg:col-span-2" : ""}
             />

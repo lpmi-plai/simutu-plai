@@ -30,7 +30,11 @@ export function getTone(capaian, target) {
 }
 
 export function formatNilai(n, satuan) {
-  return satuan === "persen" ? `${n}%` : String(n);
+  if (n == null || !Number.isFinite(n)) return "-";
+
+  const nilai = Math.round(n);
+
+  return satuan === "persen" ? `${nilai}%` : String(nilai);
 }
 
 /* Hitung capaian dan target untuk satu indikator sesuai filter prodi. */
