@@ -15,6 +15,7 @@ export default function IndikatorLembagaPage() {
   const [unitKerja, setUnitKerja] = useState("");
   const [periode, setPeriode] = useState(PERIODE[PERIODE.length - 1]);
   const [prodi, setProdi] = useState(SEMUA_PRODI);
+  const [cariIndikator, setCariIndikator] = useState("");
 
   useEffect(() => {
     const controller = new AbortController();
@@ -70,8 +71,19 @@ export default function IndikatorLembagaPage() {
     ? unitKerja
     : (unitOpsi[0] ?? "");
 
+  const kataKunci = cariIndikator.trim().toLocaleLowerCase("id");
+
   const daftar = indikatorTampil
     .filter((d) => d.unitKerja === unitAktif)
+    .filter((d) => {
+      if (!kataKunci) return true;
+
+      return [d.nama, d.rujukan, d.unitKerja, d.id].some((nilai) =>
+        String(nilai ?? "")
+          .toLocaleLowerCase("id")
+          .includes(kataKunci),
+      );
+    })
     .sort((a, b) => a.urutan - b.urutan);
 
   // function formatNamaUnit(namaUnit) {
@@ -115,6 +127,37 @@ export default function IndikatorLembagaPage() {
             onChange={setProdi}
             options={PRODI_OPSI}
           />
+
+          <div className="w-full sm:w-64">
+            <label
+              htmlFor="cari-indikator"
+              className="mb-1.5 block text-sm font-medium text-slate-700"
+            >
+              Cari indikator
+            </label>
+
+            <div className="relative">
+              <input
+                id="cari-indikator"
+                type="search"
+                value={cariIndikator}
+                onChange={(e) => setCariIndikator(e.target.value)}
+                placeholder="Nama atau kode indikator..."
+                className="w-full rounded-lg border border-slate-300 bg-white py-2 pl-3 pr-10 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              />
+
+              {cariIndikator && (
+                <button
+                  type="button"
+                  onClick={() => setCariIndikator("")}
+                  aria-label="Hapus pencarian"
+                  className="absolute inset-y-0 right-0 px-3 text-slate-400 hover:text-slate-700"
+                >
+                  &times;
+                </button>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -129,7 +172,9 @@ export default function IndikatorLembagaPage() {
         </div>
       ) : daftar.length === 0 ? (
         <p className="mt-8 text-sm text-slate-500">
-          Belum ada indikator untuk unit kerja ini.
+          {kataKunci
+            ? `Tidak ditemukan indikator yang cocok dengan "${cariIndikator}" pada unit kerja ini.`
+            : "Belum ada indikator untuk unit kerja ini."}
         </p>
       ) : (
         <div className="mt-8 grid gap-5 lg:grid-cols-2">

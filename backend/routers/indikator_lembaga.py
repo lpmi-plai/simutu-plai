@@ -1,4 +1,3 @@
-
 from fastapi import APIRouter, HTTPException, Query
 from psycopg2.extras import RealDictCursor
 import psycopg2
@@ -45,6 +44,19 @@ def get_indikator_lembaga(
                     s.aspek_standar,
                     s.nama_standar,
 
+                    -- Sumber data pertama
+                    sd1.id AS sumber_data_id,
+                    sd1.spreadsheet_name AS spreadsheet_name,
+                    sd1.sheet_name AS sheet_name,
+                    sd1.spreadsheet_url AS spreadsheet_url,
+
+                    -- Sumber data kedua
+                    sd2.id AS sumber_data_id_2,
+                    sd2.spreadsheet_name AS spreadsheet_name_2,
+                    sd2.sheet_name AS sheet_name_2,
+                    sd2.spreadsheet_url AS spreadsheet_url_2,
+
+                    -- Evaluasi indikator
                     ei.id AS evaluasi_id,
                     ei.periode,
                     ei.prodi,
@@ -63,6 +75,12 @@ def get_indikator_lembaga(
 
                 JOIN public.standar AS s
                     ON i.standard_id = s.id
+
+                LEFT JOIN public.sumber_data AS sd1
+                    ON i.data_source_id = sd1.id
+
+                LEFT JOIN public.sumber_data AS sd2
+                    ON i.data_source_id_2 = sd2.id
 
                 LEFT JOIN public.evaluasi_indikator AS ei
                     ON ei.indicator_id = i.id

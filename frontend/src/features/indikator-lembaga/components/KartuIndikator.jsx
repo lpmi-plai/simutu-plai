@@ -53,37 +53,56 @@ export default function KartuIndikator({
       <div
         className={`mt-5 grid items-center gap-6 ${
           utama
-            ? "sm:grid-cols-[13rem_1fr] sm:gap-10"
+            ? "sm:grid-cols-1 sm:gap-6"
             : "sm:grid-cols-[10rem_1fr] sm:gap-8 lg:grid-cols-1 lg:gap-6"
         }`}
       >
-        <div>
-          <CincinProgres
-            capaian={hasil.capaian}
-            target={hasil.target}
-            tone={tone}
-            besar={utama}
+        <div
+          className={`mt-5 grid items-center gap-6 ${
+            periode === "Keseluruhan"
+              ? utama
+                ? "sm:grid-cols-[13rem_1fr] sm:gap-10"
+                : "sm:grid-cols-[10rem_1fr] sm:gap-8 lg:grid-cols-1 lg:gap-6"
+              : "grid-cols-1 gap-6"
+          }`}
+        >
+          <div
+            className={
+              periode !== "Keseluruhan" && utama
+                ? "flex flex-col items-center"
+                : ""
+            }
           >
-            <span
-              className={`font-bold leading-none tabular-nums ${tone.angka} ${utama ? "text-6xl" : "text-4xl"}`}
+            <CincinProgres
+              capaian={hasil.capaian}
+              target={hasil.target}
+              tone={tone}
+              besar={utama}
             >
-              {formatNilai(hasil.capaian, satuan)}
-            </span>
-            <span className="mt-1.5 text-sm tabular-nums text-slate-500">
-              / {formatNilai(hasil.target, satuan)} target
-            </span>
-          </CincinProgres>
+              <span
+                className={`font-bold leading-none tabular-nums ${tone.angka} ${
+                  utama ? "text-6xl" : "text-4xl"
+                }`}
+              >
+                {formatNilai(hasil.capaian, satuan)}
+              </span>
 
-          <p className="mt-2 text-center text-sm text-slate-500">
-            {keterangan}
-          </p>
+              <span className="mt-1.5 text-sm tabular-nums text-slate-500">
+                / {formatNilai(hasil.target, satuan)} target
+              </span>
+            </CincinProgres>
+
+            <p className="mt-2 text-center text-sm text-slate-500">
+              {keterangan}
+            </p>
+          </div>
+
+          {periode === "Keseluruhan" ? (
+            <GrafikPeriode indikator={indikator} prodi={prodi} />
+          ) : (
+            <GrafikProdi indikator={indikator} daftarProdi={daftarProdi} />
+          )}
         </div>
-
-        {periode === "Keseluruhan" ? (
-          <GrafikPeriode indikator={indikator} prodi={prodi} />
-        ) : (
-          <GrafikProdi indikator={indikator} daftarProdi={daftarProdi} />
-        )}
       </div>
     </article>
   );
