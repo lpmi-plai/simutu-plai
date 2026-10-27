@@ -11,8 +11,17 @@ const PRODI_DB = {
 };
 
 function normalisasiSatuan(satuanTarget) {
-  const s = (satuanTarget ?? "").toLowerCase();
-  return s.includes("persen") || s.includes("%") ? "persen" : "angka";
+  const s = (satuanTarget ?? "").toLowerCase().trim();
+
+  if (s.includes("persen") || s.includes("%")) {
+    return "persen";
+  }
+
+  if (s.includes("rasio")) {
+    return "rasio";
+  }
+
+  return "angka";
 }
 
 function normalisasiProdi(prodiDb) {
@@ -34,6 +43,19 @@ function normalisasiProdi(prodiDb) {
 export function mapIndikatorApi(dataApi) {
   const hasil = new Map();
 
+  // console.log(
+  //   "[DEBUG SATUAN HASIL MAPPING]",
+  //   [...hasil.values()]
+  //     .filter((i) => i.id === 44)
+  //     .map((i) => ({
+  //       id: i.id,
+  //       nama: i.nama,
+  //       satuan: i.satuan,
+  //       target: i.target,
+  //       operasiTarget: i.operasiTarget,
+  //     })),
+  // );
+
   for (const row of dataApi) {
     if (!hasil.has(row.id)) {
       hasil.set(row.id, {
@@ -42,6 +64,7 @@ export function mapIndikatorApi(dataApi) {
         rujukan: row.kategori_rujukan,
         satuan: normalisasiSatuan(row.satuan_target),
         target: row.target == null ? null : Number(row.target),
+        operasiTarget: row.operasi_target ?? "≥",
         urutan: row.urutan,
         isShow: row.is_show,
         unitKerja: row.nama_unit,
@@ -77,6 +100,15 @@ export function mapIndikatorApi(dataApi) {
     }
 
     const indikator = hasil.get(row.id);
+    if (
+      String(row.nama_tampilan ?? "")
+        .toLowerCase()
+        .includes("rasio") ||
+      String(row.nama_tampilan ?? "")
+        .toLowerCase()
+        .includes("jumlah")
+    ) {
+    }
 
     // Data indikator bisa tetap ada meskipun belum dievaluasi.
     if (row.evaluasi_id == null) continue;
@@ -98,7 +130,7 @@ export function mapIndikatorApi(dataApi) {
     const evaluasi = {
       periode: periodeRow,
       target: row.target_value == null ? null : Number(row.target_value),
-      operasiTarget: row.operasi_target,
+      operasiTarget: row.operasi_target ?? indikator.operasiTarget ?? ">=",
       persentase:
         row.achievement_percentage == null
           ? null

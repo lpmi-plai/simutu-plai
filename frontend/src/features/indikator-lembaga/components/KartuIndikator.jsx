@@ -15,7 +15,21 @@ export default function KartuIndikator({
 }) {
   const { satuan } = indikator;
   const hasil = hitung(indikator, prodi);
-  const tone = getTone(hasil.capaian, hasil.target);
+  const tone = getTone(hasil.capaian, hasil.target, hasil.operasiTarget);
+
+  console.log("[DEBUG WARNA KARTU]", {
+    nama: indikator.nama,
+    prodi,
+    targetIndikator: indikator.target,
+    operasiTargetIndikator: indikator.operasiTarget,
+    nilaiPerProdi: indikator.nilai,
+    evaluasiPerProdi: indikator.evaluasi,
+    hasilCapaian: hasil.capaian,
+    hasilTarget: hasil.target,
+    hasilOperasi: hasil.operasiTarget,
+    warnaAngka: tone.angka,
+    labelStatus: tone.label,
+  });
 
   const semua = prodi === SEMUA_PRODI;
   const daftarProdi = semua ? PRODI_LIST : [prodi];
@@ -77,6 +91,7 @@ export default function KartuIndikator({
             <CincinProgres
               capaian={hasil.capaian}
               target={hasil.target}
+              operasiTarget={hasil.operasiTarget}
               tone={tone}
               besar={utama}
             >

@@ -1,7 +1,7 @@
+
 from fastapi import APIRouter, HTTPException, Query
 from psycopg2.extras import RealDictCursor
 import psycopg2
-
 from typing import Optional
 
 from db import get_connection
@@ -34,6 +34,7 @@ def get_indikator_lembaga(
                     i.nama_tampilan,
                     i.kategori_rujukan,
                     i.target,
+                    i.operasi_target,
                     i.satuan_target,
                     i.urutan,
                     i.is_show,
@@ -62,7 +63,7 @@ def get_indikator_lembaga(
                     ei.prodi,
                     ei.actual_value,
                     ei.target_value,
-                    ei.operasi_target,
+                    ei.operasi_target AS operasi_target_evaluasi,
                     ei.achievement_percentage,
                     ei.evaluation_status,
                     ei.created_at AS evaluasi_created_at,

@@ -2,20 +2,23 @@ import { formatNilai, getTone } from "../utils";
 
 /* Chart batang per prodi dengan garis putus-putus sebagai target. */
 export default function GrafikProdi({ indikator, daftarProdi }) {
-  const { satuan, target } = indikator;
+  const { satuan, target: targetDefault } = indikator;
 
-  const semuaNilai = daftarProdi.map((p) => indikator.nilai[p]);
+  const semuaNilai = daftarProdi
+    .map((p) => indikator.nilai[p])
+    .filter((nilai) => nilai != null && Number.isFinite(Number(nilai)))
+    .map(Number);
 
-  // Skala diberi ruang ekstra supaya batang yang melewati target tetap muat.
+  const target = targetDefault ?? 0;
+
   const skala =
-    satuan === "persen" ? 100 : Math.max(target, ...semuaNilai) * 1.15;
+    satuan === "persen" ? 100 : Math.max(target, ...semuaNilai, 1) * 1.15;
 
   const posisiTarget = (target / skala) * 100;
 
   return (
     <div>
       <div className="relative">
-        {/* Garis target. left-12 / right-14 menyamai lebar kolom label dan nilai di bawah. */}
         <div
           className="pointer-events-none absolute inset-y-0 left-12 right-14"
           aria-hidden="true"
@@ -29,7 +32,18 @@ export default function GrafikProdi({ indikator, daftarProdi }) {
         <ul className="space-y-2.5">
           {daftarProdi.map((p) => {
             const nilai = indikator.nilai[p];
-            const tone = getTone(nilai, target);
+            const evaluasi = indikator.evaluasi[p];
+
+            const targetProdi = evaluasi?.target ?? indikator.target;
+            const operasiTarget =
+              evaluasi?.operasiTarget ?? indikator.operasiTarget ?? ">=";
+
+            const tone = getTone(nilai, targetProdi, operasiTarget);
+
+            const lebar =
+              nilai == null || !Number.isFinite(Number(nilai))
+                ? 0
+                : Math.max(0, Math.min(100, (Number(nilai) / skala) * 100));
 
             return (
               <li key={p} className="flex items-center text-sm">
@@ -41,11 +55,13 @@ export default function GrafikProdi({ indikator, daftarProdi }) {
                 >
                   <div
                     className={`h-full rounded ${tone.bar} transition-[width] duration-500 motion-reduce:transition-none`}
-                    style={{ width: `${(nilai / skala) * 100}%` }}
+                    style={{ width: `${lebar}%` }}
                   />
                 </div>
 
-                <span className="w-14 text-right font-medium tabular-nums text-slate-900">
+                <span
+                  className={`w-14 text-right font-medium tabular-nums ${tone.angka}`}
+                >
                   {formatNilai(nilai, satuan)}
                 </span>
               </li>
