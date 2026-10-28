@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect } from "react";
 
 function ItemSumber({ sumber, nomor }) {
   return (
@@ -51,53 +51,75 @@ function ItemSumber({ sumber, nomor }) {
   );
 }
 
-export default function SumberData({ indikator }) {
-  const [terbuka, setTerbuka] = useState(false);
-
+export default function SumberData({ indikator, terbuka, onTutup }) {
   const sumberList = [indikator.dataSource, indikator.dataSource2].filter(
     Boolean,
   );
 
+  // Tutup dengan Esc + kunci scroll body saat modal terbuka
+  useEffect(() => {
+    if (!terbuka) return;
+
+    const onKeyDown = (e) => {
+      if (e.key === "Escape") onTutup();
+    };
+    document.addEventListener("keydown", onKeyDown);
+
+    const overflowAwal = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.body.style.overflow = overflowAwal;
+    };
+  }, [terbuka, onTutup]);
+
+  if (!terbuka) return null;
+
   return (
-    <div className="mt-5 border-t border-slate-200 pt-3">
-      <button
-        type="button"
-        onClick={() => setTerbuka((sebelumnya) => !sebelumnya)}
-        aria-expanded={terbuka}
-        className="flex w-full items-center justify-between gap-3 rounded-lg py-2 text-left text-sm font-medium text-slate-600 transition hover:text-blue-700"
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4"
+      onClick={onTutup}
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="judul-sumber-data"
+        className="max-h-[85vh] w-full max-w-md overflow-y-auto rounded-xl bg-white p-5 shadow-xl"
+        onClick={(e) => e.stopPropagation()}
       >
-        <span className="flex items-center gap-2">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.7"
-            className="h-4 w-4"
-            aria-hidden="true"
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-xs text-slate-500">Sumber data</p>
+            <h2
+              id="judul-sumber-data"
+              className="mt-0.5 break-words text-base font-semibold text-slate-800"
+            >
+              {indikator.nama}
+            </h2>
+          </div>
+
+          <button
+            type="button"
+            onClick={onTutup}
+            aria-label="Tutup"
+            className="rounded-lg p-1 text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
           >
-            <ellipse cx="12" cy="5" rx="8" ry="3" />
-            <path d="M4 5v14c0 1.66 3.58 3 8 3s8-1.34 8-3V5" />
-            <path d="M4 12c0 1.66 3.58 3 8 3s8-1.34 8-3" />
-          </svg>
-          Lihat sumber data
-          {sumberList.length > 0 && (
-            <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs">
-              {sumberList.length}
-            </span>
-          )}
-        </span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              className="h-5 w-5"
+              aria-hidden="true"
+            >
+              <path d="M6 6l12 12M18 6L6 18" />
+            </svg>
+          </button>
+        </div>
 
-        <span
-          className={`transition-transform ${terbuka ? "rotate-180" : ""}`}
-          aria-hidden="true"
-        >
-          ▾
-        </span>
-      </button>
-
-      {terbuka && (
-        <div className="mt-2 space-y-3">
+        <div className="mt-4 space-y-3">
           {sumberList.length > 0 ? (
             sumberList.map((sumber, index) => (
               <ItemSumber
@@ -112,7 +134,7 @@ export default function SumberData({ indikator }) {
             </p>
           )}
         </div>
-      )}
+      </div>
     </div>
   );
 }

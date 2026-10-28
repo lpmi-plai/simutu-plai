@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import StatusChip from "../../../components/ui/StatusChip";
 import { PRODI_LIST, SEMUA_PRODI } from "../data";
 import { formatNilai, getTone, hitung } from "../utils";
@@ -17,19 +19,21 @@ export default function KartuIndikator({
   const hasil = hitung(indikator, prodi);
   const tone = getTone(hasil.capaian, hasil.target, hasil.operasiTarget);
 
-  console.log("[DEBUG WARNA KARTU]", {
-    nama: indikator.nama,
-    prodi,
-    targetIndikator: indikator.target,
-    operasiTargetIndikator: indikator.operasiTarget,
-    nilaiPerProdi: indikator.nilai,
-    evaluasiPerProdi: indikator.evaluasi,
-    hasilCapaian: hasil.capaian,
-    hasilTarget: hasil.target,
-    hasilOperasi: hasil.operasiTarget,
-    warnaAngka: tone.angka,
-    labelStatus: tone.label,
-  });
+  const [modalSumber, setModalSumber] = useState(false);
+
+  // console.log("[DEBUG WARNA KARTU]", {
+  //   nama: indikator.nama,
+  //   prodi,
+  //   targetIndikator: indikator.target,
+  //   operasiTargetIndikator: indikator.operasiTarget,
+  //   nilaiPerProdi: indikator.nilai,
+  //   evaluasiPerProdi: indikator.evaluasi,
+  //   hasilCapaian: hasil.capaian,
+  //   hasilTarget: hasil.target,
+  //   hasilOperasi: hasil.operasiTarget,
+  //   warnaAngka: tone.angka,
+  //   labelStatus: tone.label,
+  // });
 
   const semua = prodi === SEMUA_PRODI;
   const daftarProdi = semua ? PRODI_LIST : [prodi];
@@ -41,7 +45,18 @@ export default function KartuIndikator({
 
   return (
     <article
-      className={`rounded-xl border border-slate-200 bg-white p-6 shadow-sm ${className}`}
+      role="button"
+      tabIndex={0}
+      onClick={() => setModalSumber(true)}
+      onKeyDown={(e) => {
+        if (e.target !== e.currentTarget) return; // abaikan tombol dari elemen anak
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          setModalSumber(true);
+        }
+      }}
+      aria-label={`Lihat sumber data ${indikator.nama}`}
+      className={`cursor-pointer rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition hover:border-blue-300 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${className}`}
     >
       <div
         className={`relative ${
@@ -120,7 +135,11 @@ export default function KartuIndikator({
         </div>
       </div>
 
-      <SumberData indikator={indikator} />
+      <SumberData
+        indikator={indikator}
+        terbuka={modalSumber}
+        onTutup={() => setModalSumber(false)}
+      />
     </article>
   );
 }
